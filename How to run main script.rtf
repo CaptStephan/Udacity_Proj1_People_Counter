@@ -1,0 +1,100 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2513
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11460\viewh12920\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Running the App\
+Sourcing the Environment\
+When opening a new terminal window, in order to source the environment, use the command:\
+\
+source /opt/intel/openvino/bin/setupvars.sh -pyver 3.5\
+\
+Any new terminals you open will again need this command run.\
+\
+Starting the Servers\
+Before running main.py, you will need to have the MQTT, FFmpeg and UI servers all up and running. If you are running your app on a local device, make sure you have followed the earlier set-up instructions so that all dependencies are installed.\
+\
+You\'92ll need terminals open for each of these. For each, cd into the main directory containing all of your People Counter app files.\
+\
+Note: You will need to run npm install in the webservice/server and webservice/ui directories if you have not already.\
+\
+From there:\
+\
+For the MQTT server:\
+cd webservice/server/node-server\
+node ./server.js\
+\
+For the UI:\
+cd webservice/ui\
+npm run dev\
+\
+For the FFPMEG server:\
+sudo ffserver -f ./ffmpeg/server.conf\
+\
+Starting the App Itself\
+As you may have noticed, there are a number of arguments that can be passed into main.py when run from a terminal. While you should make sure to check them out in the code itself, it\'92s important to note you\'92ll also want to add some additional commands to make sure the output image frames are sent to the FFmpeg server.\
+\
+The arguments for main.py can be entered as follows (you may need to specify python3 on your system):\
+\
+python main.py -i \{path_to_input_file\} -m \{path_to_model\} -l \{path_to_cpu_extension\} -d \{device_type\} -pt \{probability_threshold\}\
+\
+The arguments for FFmpeg can be entered as follows - note that we\'92ll include the values here that will work optimally with the FFmpeg server and UI instead of placeholders. If you have not updated the FFmpeg server.conf file, this will match to what is configured therein.\
+\
+ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm\
+\
+To run these two together, while you have the ffserver, MQTT server, and UI server already running through separate terminals, you can use a pipe symbol (|) to combine them as one. Here is an example, along with possible paths for main.py arguments included:\
+\
+python main.py -i resources/Pedestrian_Detect_2_1_1.mp4 -m your-model.xml -l /opt/intel/openvino/deployment_tools/inference_engine/lib/intel64/libcpu_extension_sse4.so -d CPU -pt 0.6 | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm\
+
+\f1\b \
+Local machine set-up:
+\f0\b0 \
+For the MQTT server:\
+cd /Users/CaptStephan/Desktop/Udacity_Classes/Intel_AI_Scholarship_Phase_2/nd131-openvino-fundamentals-project-starter-master/webservice/server/node-server\
+node ./server.js\
+\
+For the UI:\
+cd /Users/CaptStephan/Desktop/Udacity_Classes/Intel_AI_Scholarship_Phase_2/nd131-openvino-fundamentals-project-starter-master/webservice/ui\
+npm run dev\
+\
+For the FFPMEG server:\
+sudo ffserver -f /Users/CaptStephan/Desktop/Udacity_Classes/Intel_AI_Scholarship_Phase_2/nd131-openvino-fundamentals-project-starter-master/ffmpeg/server.conf\
+\
+
+\f1\b My version specifically (local machine) is:\
+for faster_rcnn_inception_v2:\
+
+\f0\b0 python3 main.py -i resources/Pedestrian_Detect_2_1_1.mp4 -m /Users/CaptStephan/Desktop/Udacity_Classes/Intel_AI_Scholarship_Phase_2/nd131-openvino-fundamentals-project-starter-master/faster_rcnn_inception_v2_coco_2018_01_28/frozen_inference_graph.xml -d CPU -pt 0.6 | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm\
+
+\f1\b for :rfcn_resnet101_coco:\
+
+\f0\b0 python3 main.py -i resources/Pedestrian_Detect_2_1_1.mp4 -m /Users/CaptStephan/Desktop/Udacity_Classes/Intel_AI_Scholarship_Phase_2/nd131-openvino-fundamentals-project-starter-master/rfcn_resnet101_coco_2018_01_28/frozen_inference_graph.xml -d CPU -pt 0.6 | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm\
+\
+\
+
+\f1\b My version specifically (classroom workspace) is:\
+
+\f0\b0 python3 main_V3.py -i resources/Pedestrian_Detect_2_1_1.mp4 -m /home/workspace/model/frozen_inference_graph.xml -l /opt/intel/openvino/deployment_tools/inference_engine/lib/intel64/libcpu_extension_sse4.so -d CPU -pt 0.4 | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm\
+\
+Got an error:  openvino.inference_engine.ie_api.IENetwork.__cinit__\
+RuntimeError: Error reading network: cannot parse future versions: 10\
+\
+Had to delete the folder ~/openvino_models. Old model version might interfere with the R4 release. \
+Note: The primary CPU extension file differs in naming between Linux and Mac. On Linux, the name is libcpu_extension_sse4.so, while on Mac it is libcpu_extension.dylib.\
+\
+Viewing the App in Your Browser\
+If you are in the classroom workspace, use the \'93Open App\'94 button to view the app in the browser, or if working locally, navigate to http://0.0.0.0:3004 in your browser. You should be able to see the video stream with any relevant outputs (bounding boxes, semantic masks, etc.) onto the video. Additionally, you can click the icon in the upper right to expand to show some statistical information; clicking another icon under the existing charts on this new menu will expand the final piece of information.\
+\
+Switched to Openvino model zoo:\
+/opt/intel/openvino/deployment_tools/open_model_zoo/models/intel/person-detection-retail-0013\
+\
+**********\
+**********\
+15Jun20 Update:\
+Having issues processing input video in ffmpeg.  The settings above may be wrong, see:  https://knowledge.udacity.com/questions/130176 to try and figure this out.\
+\
+\
+\
+}
