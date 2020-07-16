@@ -29,7 +29,7 @@ Reasons for implementing a custom layer might be to test a new topology or test 
 
 I first did a quick Google search for possible pre-trained models and came up with ALEXNET that won the Imagenet Large Scale Visual Recognition Challenge (ILSVRC) in 2012. This seemed a little lofty, so I did more searching and came across the TensorFlow Model Zoo. Available models in the Model Zoo provided options for accuracy and speed on pre-trained TensorFlow models. I chose the "Faster RCN Inception V2" model based on high relative performace and above average accuracy. Only models that output boxes were considered.
 
-Relative performace was evaluated using the table here:
+Relative performance was evaluated using the table here:
 https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md
 
 The model files were downloaded from:
@@ -48,9 +48,13 @@ were made using runs in the Classroom Workspace and comparisons provided in the 
 
 The model inference time pre-conversion according to the documentation (based on timings performed using an Nvidia GeForce GTX TITAN X card) was 92mS. This is a very good performance and would likely be far better than the Classroom Workspace.  Since my Python skills are a bit limited, I struggled to complete this in a timely manner and was not able to compare the two models myself.  Using numbers provided by a classmate I was able to see that a similar model had similar accuracy before and after conversion.  It also had an improvement in speed of approximately 98.8%!! This is an incredible boost for a small device and would be a great advantage.
 
+**Edit (response to reviewer comments):** After making some code adjustments I was able to determine inference time at an average of 2.8mS. This is an order of magnitude improvement over the model run in Tensorflow at 92mS.
+
 The size of the model pre- and post-conversion was 57MB and 250KB respectively.  The reduction was significant and would save disk storage space on a smaller device like the Raspberry Pi.
 
 ## Assess Model Use Cases
+
+**Edit (response to reviewer comments):** The text that follows is my respnose to the question of potential use cases.
 
 Some of the potential use cases of the people counter app are detecting the maximum number of people allowed into a room at one time or counting the number of people entering a transit station to predict the number of train cars or busses required to be active at any one time.
 
@@ -58,5 +62,8 @@ Each of these use cases would be useful because it would improve public safety a
 
 ## Assess Effects on End User Needs
 
-Lighting, model accuracy, and camera focal length/image size have different effects on a
-deployed edge model. The potential effects of each of these are similar in that the all impact the model accuracy in the end.  Having poor lighting can make the detection less accurate.  Having a poorly trained model will result in lower accuracy. Having a camera with a too narrow focal length will also reduce the visibility of a person in the frame and result in lower accuracy.
+**Edit (response to reviewer comments):** The text that follows in my response to the question of how different items impact end user needs.
+
+Lighting, model accuracy, and camera focal length/image size have different effects on a deployed edge model. The potential effects of each of these are similar in that the all impact the model accuracy in the end.  Having poor lighting can make the detection less accurate.  Having a poorly trained model will result in lower accuracy. Having a camera with a too narrow focal length will also reduce the visibility of a person in the frame and result in lower accuracy.
+
+Each of these things will reduce the ability of the model to correctly predict when a person is in the frame.
