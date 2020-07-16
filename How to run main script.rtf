@@ -76,7 +76,12 @@ for faster_rcnn_inception_v2:\
 
 \f1\b My version specifically (classroom workspace) is:\
 
-\f0\b0 python3 main_V3.py -i resources/Pedestrian_Detect_2_1_1.mp4 -m /home/workspace/model/frozen_inference_graph.xml -l /opt/intel/openvino/deployment_tools/inference_engine/lib/intel64/libcpu_extension_sse4.so -d CPU -pt 0.4 | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm\
+\f0\b0 python3 main_V4.py -i resources/Pedestrian_Detect_2_1_1.mp4 -m /home/workspace/model/frozen_inference_graph.xml -l /opt/intel/openvino/deployment_tools/inference_engine/lib/intel64/libcpu_extension_sse4.so -d CPU -pt 0.4 | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm\
+\
+
+\f1\b Version for single image:\
+
+\f0\b0 python3 main_V4.py -i images/jogging.jpg -m /home/workspace/model/frozen_inference_graph.xml -l /opt/intel/openvino/deployment_tools/inference_engine/lib/intel64/libcpu_extension_sse4.so -d CPU -pt 0.4\
 \
 Got an error:  openvino.inference_engine.ie_api.IENetwork.__cinit__\
 RuntimeError: Error reading network: cannot parse future versions: 10\
@@ -87,8 +92,6 @@ Note: The primary CPU extension file differs in naming between Linux and Mac. On
 Viewing the App in Your Browser\
 If you are in the classroom workspace, use the \'93Open App\'94 button to view the app in the browser, or if working locally, navigate to http://0.0.0.0:3004 in your browser. You should be able to see the video stream with any relevant outputs (bounding boxes, semantic masks, etc.) onto the video. Additionally, you can click the icon in the upper right to expand to show some statistical information; clicking another icon under the existing charts on this new menu will expand the final piece of information.\
 \
-Switched to Openvino model zoo:\
-/opt/intel/openvino/deployment_tools/open_model_zoo/models/intel/person-detection-retail-0013\
 \
 **********\
 **********\
