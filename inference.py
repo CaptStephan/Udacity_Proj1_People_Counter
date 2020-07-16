@@ -50,46 +50,44 @@ class Network:
         self.network = IENetwork(model=model_xml, weights=model_bin)
 
         ### TODO: Add any necessary extensions ###
-        # moved this from below to in front of supported layers check because adding
-        # extensions will change supported layers
-        #if cpu_extension != "None":
-        #    self.plugin.add_extension(cpu_extension, device)
+        if cpu_extension != "None":
+            self.plugin.add_extension(cpu_extension, device)
 
         ### TODO: Check for supported layers ###
-        unsupported_layers = [0]
-        #print("Length of unsupported layers before checking is " + str(len(unsupported_layers)))
+        unsupported_layers = []
         supported_layers = self.plugin.query_network(network=self.network, device_name=device)
 
         for i in self.network.layers.keys():
             if i not in supported_layers:
                 unsupported_layers.append(i)
-        if len(unsupported_layers) > 1:
-            #print("Unsupported Layers Found, list follows:")
-            #print(unsupported_layers)
-            exit(1)
+        if len(unsupported_layers) > 0:
+            sys.exit("Unsupported Layers Found, list follows:")
 
         ### TODO: Return the loaded inference plugin ###
         ### Note: You may need to update the function parameters. ###
         self.exec_network = self.plugin.load_network(self.network, device)
-        #then need to get the input layer
+
+        #then need to get the input layer(s)
         self.input_blob = next(iter(self.network.inputs))
-        #print("Got the input_blob and it is " + str(self.input_blob))
         self.output_blob = next(iter(self.network.outputs))
 
         return self.exec_network
 
     def get_input_shape(self):
         ### TODO: Return the shape of the input layer ###
-        shape = self.network.inputs[self.input_blob].shape
-        #print("Retrieved input shape = " + str(shape))
+        #shape = self.network.inputs[self.input_blob].shape
+        #from mentor help:
+        shape = self.network.inputs['image_tensor'].shape
 
         return shape
 
     def exec_net(self, image):
         ### TODO: Start an asynchronous request ###
-        #print("Got to exec_net def and image shape is " + str(image.shape))
-        self.exec_network.start_async(request_id=0, inputs={self.input_blob: image, 'image_info': image.shape[1:]})
-        #print("Started an async request.")
+        self.exec_network.start_async(request_id=0, inputs={'image_tensor': image, 'image_info': image.shape[1:]})
+
+        #Review#1 asked me to replace the above line with this one, but it does not work as I have two
+        #inputs to this model: ['image_info', 'image_tensor'], so I have to send something for the 'image_info'
+        #self.exec_network.start_async(request_id=0, inputs={self.input_blob: image})
 
         ### TODO: Return any necessary information ###
         ### Note: You may need to update the function parameters. ###
@@ -98,11 +96,7 @@ class Network:
     def wait(self):
         ### TODO: Wait for the request to be complete. ###
         ### TODO: Return any necessary information ###
-        #print("Got to wait function.")
-#       #faulthandler.enable()
-#       #print("Enabled faulthandler")
         status = self.exec_network.requests[0].wait(-1)
-        #print("Got status.")
 
         ### Note: You may need to update the function parameters. ###
         return status
